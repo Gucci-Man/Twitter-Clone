@@ -138,7 +138,7 @@ def list_users():
 
     return render_template('users/index.html', users=users)
 
-
+# TODO - add user's location, bio and header image
 @app.route('/users/<int:user_id>')
 def users_show(user_id):
     """Show user profile."""
