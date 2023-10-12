@@ -122,9 +122,10 @@ def logout():
 ##############################################################################
 # General user routes:
 
+
 @app.route('/users')
 def list_users():
-    """Page with listing of users.
+    """Page with listing of users. Use with the search field.
 
     Can take a 'q' param in querystring to search by that username.
     """
@@ -167,7 +168,7 @@ def show_following(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('users/following.html', user=user)
 
-
+# TODO - show bio for users
 @app.route('/users/<int:user_id>/followers')
 def users_followers(user_id):
     """Show list of followers of this user."""
