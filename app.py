@@ -210,7 +210,7 @@ def stop_following(follow_id):
 
     return redirect(f"/users/{g.user.id}/following")
 
-# TODO - implement profile edit, check password
+
 @app.route('/users/profile', methods=["GET", "POST"])
 def profile():
     """Update profile for current user."""
@@ -236,7 +236,7 @@ def profile():
             return redirect("/")
 
         try:
-            
+
             if form.username.data:
                 user.username = form.username.data
             if form.email.data:
@@ -328,7 +328,7 @@ def messages_destroy(message_id):
 ##############################################################################
 # Homepage and error pages
 
-
+# TODO - show last 100 warbles only from the users following and user themself
 @app.route('/')
 def homepage():
     """Show homepage:
