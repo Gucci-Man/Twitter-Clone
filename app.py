@@ -215,31 +215,49 @@ def stop_following(follow_id):
 def profile():
     """Update profile for current user."""
 
-    # IMPLEMENT THIS
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
     
+    # retrieve current user 
+    user_id = session[CURR_USER_KEY] 
+    user = User.query.get_or_404(user_id)
     form = UserEditForm()
 
     if form.validate_on_submit():
+
+        # verify password is correct
+        # if wrong, flash error and redirect to homepage
+        verify_user = User.authenticate(user.username,
+                                 form.password.data)
+
+        if verify_user is False:
+            flash(f"Error! Wrong password!", "danger")
+            return redirect("/")
+
         try:
-            """ user = User.signup(
-                username=form.username.data,
-                password=form.password.data,
-                email=form.email.data,
-                image_url=form.image_url.data or User.image_url.default.arg,
-            )
-            db.session.commit() """
+            
+            if form.username.data:
+                user.username = form.username.data
+            if form.email.data:
+                user.email = form.email.data
+            if form.image_url.data:
+                user.image_url = form.image_url.data
+            if form.header_image_url.data:
+                user.header_image_url = form.header_image_url.data
+            if form.bio.data:
+                user.bio = form.bio.data
+
+            db.session.commit()
 
         except IntegrityError:
             flash("Username already taken", 'danger')
-            return render_template('users/signup.html', form=form)
+            return render_template('/')
 
-        return redirect("/")
+        return redirect(f"/users/{user.id}")
 
     else:
-        return render_template('users/edit.html', form=form)
+        return render_template('users/edit.html', form=form, user=user)
 
 
 @app.route('/users/delete', methods=["POST"])
