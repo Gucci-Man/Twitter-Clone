@@ -2,7 +2,7 @@
 
 # run these tests like:
 #
-#    FLASK_ENV=production python -m unittest test_message_views.py
+#    FLASK_ENV=production python3 -m unittest test_message_views.py
 
 
 import os
@@ -26,6 +26,7 @@ from app import app, CURR_USER_KEY
 # once for all tests --- in each test, we'll delete the data
 # and create fresh new clean test data
 
+db.drop_all()
 db.create_all()
 
 # Don't have WTForms use CSRF at all, since it's a pain to test
