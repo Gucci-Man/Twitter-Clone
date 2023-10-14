@@ -328,7 +328,7 @@ def messages_destroy(message_id):
 ##############################################################################
 # Homepage and error pages
 
-# TODO - show last 100 warbles only from the users following and user themself
+
 @app.route('/')
 def homepage():
     """Show homepage:
@@ -338,11 +338,13 @@ def homepage():
     """
 
     if g.user:
-        messages = (Message
-                    .query
-                    .order_by(Message.timestamp.desc())
-                    .limit(100)
-                    .all())
+        
+        messages = (
+            Message.query.filter(Message.user_id.in_([g.user.id] + [person.id for person in g.user.following]))
+            .order_by(Message.timestamp.desc())
+            .limit(100)
+            .all()
+        )
 
         return render_template('home.html', messages=messages)
 
