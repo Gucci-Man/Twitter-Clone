@@ -52,6 +52,11 @@ class MessageViewTestCase(TestCase):
 
         db.session.commit()
 
+    def tearDown(self):
+        """Clean up fouled transactions"""
+
+        db.session.rollback()
+
     def test_add_message(self):
         """Can use add a message?"""
 
@@ -80,17 +85,17 @@ class MessageViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.testuser.id
 
-        # add new message then get response
-        c.post("/messages/new", data={"text": "Hello"})
-        msg = Message.query.one()
-       
-        resp = c.get(f'/messages/{msg.id}')
+            # add new message then get response
+            c.post("/messages/new", data={"text": "Hello"})
+            msg = Message.query.one()
+        
+            resp = c.get(f'/messages/{msg.id}')
 
-        # show that response is good
-        self.assertEqual(resp.status_code, 200)
+            # show that response is good
+            self.assertEqual(resp.status_code, 200)
 
-        # show message text from get response
-        self.assertEqual(msg.text, "Hello")
+            # show message text from get response
+            self.assertEqual(msg.text, "Hello")
 
     def test_delete_message(self):
         """Test deleting a message"""
@@ -99,16 +104,16 @@ class MessageViewTestCase(TestCase):
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.testuser.id
 
-        c.post("/messages/new", data={"text": "Hello"})
-        msg = Message.query.one()
+            c.post("/messages/new", data={"text": "Hello"})
+            msg = Message.query.one()
 
-        resp = c.post(f'/messages/{msg.id}/delete')
-        print(f'message is {resp.json}')
-        
-        # After deleting should redirect to user profile
-        self.assertEqual(resp.status_code, 302)
+            resp = c.post(f'/messages/{msg.id}/delete')
+            print(f'message is {resp.json}')
+            
+            # After deleting should redirect to user profile
+            self.assertEqual(resp.status_code, 302)
 
-        # Assert that the message has been deleted from the database
-        self.assertIsNone(resp.json)
+            # Assert that the message has been deleted from the database
+            self.assertIsNone(resp.json)
 
 
