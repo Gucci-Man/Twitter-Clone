@@ -169,6 +169,7 @@ def add_like(msg_id):
 
     # if warble is from user, redirect to homepage without liking it
     if g.user.id == message.user_id:
+        flash("Sorry, cannot like own post", "danger")
         return redirect("/")
     
     # if message is already liked, then unlike it
@@ -184,6 +185,17 @@ def add_like(msg_id):
     db.session.commit()
 
     return redirect("/")
+
+
+@app.route('/users/<int:user_id>/likes')
+def show_likes(user_id):
+    """Show user liked messages"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    return render_template("users/show_likes.html", user=g.user, likes=g.user.likes)
 
 
 @app.route('/users/<int:user_id>/following')
