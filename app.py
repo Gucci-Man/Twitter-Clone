@@ -5,7 +5,7 @@ from flask import Flask, render_template, request, flash, redirect, session, g
 from sqlalchemy.exc import IntegrityError
 
 from forms import UserAddForm, LoginForm, MessageForm, UserEditForm
-from models import db, connect_db, User, Message
+from models import db, connect_db, User, Message, Likes
 
 CURR_USER_KEY = "curr_user"
 
@@ -157,6 +157,35 @@ def users_show(user_id):
     return render_template('users/show.html', user=user, messages=messages)
 
 
+@app.route('/users/add_like/<int:msg_id>', methods=["POST"])
+def add_like(msg_id):
+    """Add like from a warble"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    message = Message.query.get_or_404(msg_id)
+
+    # if warble is from user, redirect to homepage without liking it
+    if g.user.id == message.user_id:
+        return redirect("/")
+    
+    # if message is already liked, then unlike it
+    if message in g.user.likes:
+        unlike = Likes.query.filter_by(message_id=msg_id).first()
+        db.session.delete(unlike)
+        db.session.commit()
+        return redirect("/")
+
+    # add new like to database
+    like = Likes(user_id=g.user.id, message_id=msg_id)
+    db.session.add(like)
+    db.session.commit()
+
+    return redirect("/")
+
+
 @app.route('/users/<int:user_id>/following')
 def show_following(user_id):
     """Show list of people this user is following."""
@@ -236,7 +265,6 @@ def profile():
             return redirect("/")
 
         try:
-
             if form.username.data:
                 user.username = form.username.data
             if form.email.data:
@@ -335,10 +363,11 @@ def homepage():
 
     - anon users: no messages
     - logged in: 100 most recent messages of followed_users
+    - show likes by user
+
     """
 
     if g.user:
-        
         messages = (
             Message.query.filter(Message.user_id.in_([g.user.id] + [person.id for person in g.user.following]))
             .order_by(Message.timestamp.desc())
@@ -346,7 +375,11 @@ def homepage():
             .all()
         )
 
-        return render_template('home.html', messages=messages)
+        # retrieve user likes
+        user_likes = Likes.query.filter_by(user_id=g.user.id).all()
+        likes = [like.message_id for like in user_likes]
+
+        return render_template('home.html', messages=messages, likes=likes)
 
     else:
         return render_template('home-anon.html')
