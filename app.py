@@ -157,34 +157,7 @@ def users_show(user_id):
     return render_template('users/show.html', user=user, messages=messages)
 
 
-@app.route('/users/add_like/<int:msg_id>', methods=["POST"])
-def add_like(msg_id):
-    """Add like from a warble"""
 
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-    
-    message = Message.query.get_or_404(msg_id)
-
-    # if warble is from user, redirect to homepage without liking it
-    if g.user.id == message.user_id:
-        flash("Sorry, cannot like own post", "danger")
-        return redirect("/")
-    
-    # if message is already liked, then unlike it
-    if message in g.user.likes:
-        unlike = Likes.query.filter_by(message_id=msg_id).first()
-        db.session.delete(unlike)
-        db.session.commit()
-        return redirect("/")
-
-    # add new like to database
-    like = Likes(user_id=g.user.id, message_id=msg_id)
-    db.session.add(like)
-    db.session.commit()
-
-    return redirect("/")
 
 
 @app.route('/users/<int:user_id>/likes')
@@ -340,6 +313,35 @@ def messages_add():
         return redirect(f"/users/{g.user.id}")
 
     return render_template('messages/new.html', form=form)
+
+@app.route('/messages/<int:msg_id>/like', methods=["POST"])
+def add_like(msg_id):
+    """Add like from a warble"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    message = Message.query.get_or_404(msg_id)
+
+    # if warble is from user, redirect to homepage without liking it
+    if g.user.id == message.user_id:
+        flash("Sorry, cannot like own post", "danger")
+        return redirect("/")
+    
+    # if message is already liked, then unlike it
+    if message in g.user.likes:
+        unlike = Likes.query.filter_by(message_id=msg_id).first()
+        db.session.delete(unlike)
+        db.session.commit()
+        return redirect("/")
+
+    # add new like to database
+    like = Likes(user_id=g.user.id, message_id=msg_id)
+    db.session.add(like)
+    db.session.commit()
+
+    return redirect("/")
 
 
 @app.route('/messages/<int:message_id>', methods=["GET"])
