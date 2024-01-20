@@ -19,7 +19,7 @@ This is a Twitter clone project called Warbler. Built with Python and Flask usin
 
 - **Creating new users:** Users can create new accounts with a unique username, password and optional profile picture. Returning users are able to log back in.
 
-- **Creating posts and main page**: Users may create Twitter like messages (posts) and may edit and delete them. Posts are composed of a the author, message and time stamp. Logged in users have access to the main page where they may see other user's posts.
+- **Creating posts and main page**: Users may create Twitter like messages (posts) and may edit and delete them. Posts are composed of a the author, message and time stamp. Logged in users have access to the main page where they may see other user's posts and 'like' them.
 
 - **Followers/Following:** Users may gain followers from other users while also being able to follow other accounts as well. This will reflect on their profiles. 
 
