@@ -7,13 +7,13 @@
 This is a Twitter clone project called Warbler. Built with Python and Flask using data from a local database with PostgreSQL. 
 
 #### Welcome Page:
-![Alt text](image-2.png)
+![welcome page](/pics/welcome_page.png)
 
 #### Main Page:
-![Alt text](image.png)
+![main page](/pics/main_page.png)
 
 #### User Profile:
-![Alt text](image-1.png)
+![user page](/pics/profile.png)
 
 ## Features
 
