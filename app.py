@@ -139,7 +139,7 @@ def list_users():
 
     return render_template('users/index.html', users=users)
 
-# TODO - header image, not perfect but it is there
+
 @app.route('/users/<int:user_id>')
 def users_show(user_id):
     """Show user profile."""
